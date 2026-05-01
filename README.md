@@ -11,14 +11,14 @@ that are possible or the reverse, only as dates there is no option. Just test th
 Example storage format:
 
 ```text
-2026-05-12,2026-05-13,2026-05-20
+2026-05-12|Holiday,2026-05-13,2026-05-20|On tour
 ```
 or
 
 ```text
-2026-05-12
+2026-05-12|Holiday
 2026-05-13
-2026-05-20
+2026-05-20|On tour
 ```
 
 ## Preview of the settings for this plugin:
@@ -30,7 +30,7 @@ https://raw.githubusercontent.com/SteveAlink/oliva-events/main/wcms-modules.json
 ```
 
 ## Versions
-v0.4.0 01-05-2026 Change in frontend  
+v0.4.0 01-05-2026 Change to include a description per day   
 v0.3.0 01-05-2026 One is now able to show the available days or the not available date  
 v0.2.0 01-05-2026 Date fromatting changed on front end  
 v0.1.0 01-05-2026 Initial version
@@ -56,6 +56,10 @@ Version 0.3.0 Comes with an Added display mode switch:
 - Dates can now be entered comma-separated or one date per line
 - Frontend styling changes based on selected display mode
 
-Version 0.4.0 Has a number of minor changes
+Version 0.4.0 Added optional descriptions for dates:
 
-- Color coding on rows of dates on front end now have better distinction 
+- Supports `YYYY-MM-DD|Description`
+- Keeps plain `YYYY-MM-DD` dates working
+- Supports comma-separated dates and one date per line
+- Shows the description below the formatted date on the frontend
+- Color coding on rows of dates on front end now have better distinction
