@@ -1,0 +1,72 @@
+#oliva-events {
+    margin: 2rem auto;
+    padding: 1.5rem;
+    max-width: 760px;
+    border: 1px solid #BCC915;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+#oliva-events h2 {
+    margin-top: 0;
+    color: #6A720C;
+}
+
+.oliva-events-legend {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.oliva-events-legend-item {
+    display: inline-block;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
+}
+
+.oliva-events-available {
+    background: #eef3c3;
+    color: #6A720C;
+}
+
+.oliva-events-unavailable {
+    background: #6A720C;
+    color: #ffffff;
+}
+
+.oliva-events-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.oliva-events-date {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 8px;
+}
+
+.oliva-events-date-unavailable {
+    background: #f4f5e4;
+    border-left: 5px solid #6A720C;
+}
+
+.oliva-events-date-value {
+    font-weight: 600;
+}
+
+.oliva-events-date-status {
+    color: #6A720C;
+}
+
+.oliva-events-empty {
+    padding: 0.75rem;
+    background: #eef3c3;
+    border-radius: 8px;
+    color: #6A720C;
+}
