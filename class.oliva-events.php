@@ -14,7 +14,7 @@ class OlivaEvents
 
     private function loadTranslations()
     {
-        $lang = $this->Wcms->get('config', 'adminLang');
+        $adminLang = $this->Wcms->get('config', 'adminLang');
 
         $map = [
             'en' => 'en_US',
@@ -25,7 +25,7 @@ class OlivaEvents
             'it' => 'it_IT'
         ];
 
-        $langCode = $map[$lang] ?? 'en_US';
+        $langCode = $map[$adminLang] ?? 'en_US';
         $file = __DIR__ . '/languages/' . $langCode . '.ini';
 
         if (file_exists($file)) {
@@ -123,6 +123,94 @@ class OlivaEvents
         sort($dates);
 
         return $dates;
+    }
+
+    private function getVisitorTranslations()
+    {
+        $lang = $this->getVisitorLanguage();
+        $file = __DIR__ . '/languages/' . $lang . '.ini';
+
+        if (file_exists($file)) {
+            return parse_ini_file($file);
+        }
+
+        return parse_ini_file(__DIR__ . '/languages/en_US.ini');
+    }
+
+    private function formatDate($date)
+    {
+        $timestamp = strtotime($date);
+
+        if (!$timestamp) {
+            return $date;
+        }
+
+        $lang = $this->getVisitorLanguage();
+
+        $months = [
+            'en_US' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            'nl_NL' => ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'],
+            'es_ES' => ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+            'de_DE' => ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            'fr_FR' => ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+            'it_IT' => ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre']
+        ];
+
+        $monthNumber = (int) date('n', $timestamp);
+        $monthName = $months[$lang][$monthNumber - 1] ?? $months['en_US'][$monthNumber - 1];
+
+        return date('j', $timestamp) . ' ' . $monthName . ' ' . date('Y', $timestamp);
+    }
+
+    private function getMonthHeading($date)
+    {
+        $timestamp = strtotime($date);
+
+        if (!$timestamp) {
+            return '';
+        }
+
+        $lang = $this->getVisitorLanguage();
+
+        $months = [
+            'en_US' => ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            'nl_NL' => ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december'],
+            'es_ES' => ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'],
+            'de_DE' => ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+            'fr_FR' => ['janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'],
+            'it_IT' => ['gennaio', 'febbraio', 'marzo', 'aprile', 'maggio', 'giugno', 'luglio', 'agosto', 'settembre', 'ottobre', 'novembre', 'dicembre']
+        ];
+
+        $monthNumber = (int) date('n', $timestamp);
+        $monthName = $months[$lang][$monthNumber - 1] ?? $months['en_US'][$monthNumber - 1];
+
+        return ucfirst($monthName) . ' ' . date('Y', $timestamp);
+    }
+
+    private function groupDatesByMonth($dates)
+    {
+        $grouped = [];
+
+        foreach ($dates as $date) {
+            $timestamp = strtotime($date);
+
+            if (!$timestamp) {
+                continue;
+            }
+
+            $key = date('Y-m', $timestamp);
+
+            if (!isset($grouped[$key])) {
+                $grouped[$key] = [
+                    'heading' => $this->getMonthHeading($date),
+                    'dates' => []
+                ];
+            }
+
+            $grouped[$key]['dates'][] = $date;
+        }
+
+        return $grouped;
     }
 
     private function createInput($doc, $name, $value)
@@ -265,23 +353,33 @@ class OlivaEvents
         }
 
         if (isset($_POST['saveOlivaEventsSettings'])) {
-            $this->Wcms->set('config', 'olivaEventsCalendarTitle',
+            $this->Wcms->set(
+                'config',
+                'olivaEventsCalendarTitle',
                 $this->cleanText($_POST['oliva_events_calendar_title'] ?? $this->t('defaultCalendarTitle'))
             );
 
-            $this->Wcms->set('config', 'olivaEventsUnavailableDates',
+            $this->Wcms->set(
+                'config',
+                'olivaEventsUnavailableDates',
                 $this->cleanText($_POST['oliva_events_unavailable_dates'] ?? '')
             );
 
-            $this->Wcms->set('config', 'olivaEventsAvailableLabel',
+            $this->Wcms->set(
+                'config',
+                'olivaEventsAvailableLabel',
                 $this->cleanText($_POST['oliva_events_available_label'] ?? $this->t('defaultAvailableLabel'))
             );
 
-            $this->Wcms->set('config', 'olivaEventsUnavailableLabel',
+            $this->Wcms->set(
+                'config',
+                'olivaEventsUnavailableLabel',
                 $this->cleanText($_POST['oliva_events_unavailable_label'] ?? $this->t('defaultUnavailableLabel'))
             );
 
-            $this->Wcms->set('config', 'olivaEventsVisitorLanguage',
+            $this->Wcms->set(
+                'config',
+                'olivaEventsVisitorLanguage',
                 $this->cleanText($_POST['oliva_events_visitor_language'] ?? 'en_US')
             );
         }
@@ -291,34 +389,60 @@ class OlivaEvents
 
     public function renderCalendar(array $args): array
     {
+        $visitorTranslations = $this->getVisitorTranslations();
+
         $title = htmlspecialchars($this->getCalendarTitle(), ENT_QUOTES, 'UTF-8');
         $availableLabel = htmlspecialchars($this->getAvailableLabel(), ENT_QUOTES, 'UTF-8');
         $unavailableLabel = htmlspecialchars($this->getUnavailableLabel(), ENT_QUOTES, 'UTF-8');
+
+        $todayLabel = htmlspecialchars($visitorTranslations['todayLabel'] ?? 'Today', ENT_QUOTES, 'UTF-8');
+
         $dates = $this->parseUnavailableDates();
+        $groupedDates = $this->groupDatesByMonth($dates);
+        $today = date('Y-m-d');
 
         $html = PHP_EOL;
         $html .= '<section id="oliva-events" class="oliva-events">' . PHP_EOL;
         $html .= '  <h2>' . $title . '</h2>' . PHP_EOL;
+
         $html .= '  <div class="oliva-events-legend">' . PHP_EOL;
         $html .= '    <span class="oliva-events-legend-item oliva-events-available">' . $availableLabel . '</span>' . PHP_EOL;
         $html .= '    <span class="oliva-events-legend-item oliva-events-unavailable">' . $unavailableLabel . '</span>' . PHP_EOL;
         $html .= '  </div>' . PHP_EOL;
 
-        if (empty($dates)) {
+        if (empty($groupedDates)) {
             $html .= '  <p class="oliva-events-empty">' . $availableLabel . '</p>' . PHP_EOL;
         } else {
-            $html .= '  <ul class="oliva-events-list">' . PHP_EOL;
+            foreach ($groupedDates as $month) {
+                $html .= '  <div class="oliva-events-month">' . PHP_EOL;
+                $html .= '    <h3>' . htmlspecialchars($month['heading'], ENT_QUOTES, 'UTF-8') . '</h3>' . PHP_EOL;
+                $html .= '    <ul class="oliva-events-list">' . PHP_EOL;
 
-            foreach ($dates as $date) {
-                $safeDate = htmlspecialchars($date, ENT_QUOTES, 'UTF-8');
+                foreach ($month['dates'] as $date) {
+                    $safeDate = htmlspecialchars($date, ENT_QUOTES, 'UTF-8');
+                    $formattedDate = htmlspecialchars($this->formatDate($date), ENT_QUOTES, 'UTF-8');
 
-                $html .= '    <li class="oliva-events-date oliva-events-date-unavailable" data-date="' . $safeDate . '">' . PHP_EOL;
-                $html .= '      <span class="oliva-events-date-value">' . $safeDate . '</span>' . PHP_EOL;
-                $html .= '      <span class="oliva-events-date-status">' . $unavailableLabel . '</span>' . PHP_EOL;
-                $html .= '    </li>' . PHP_EOL;
+                    $classes = 'oliva-events-date oliva-events-date-unavailable';
+
+                    if ($date === $today) {
+                        $classes .= ' oliva-events-date-today';
+                    }
+
+                    $html .= '      <li class="' . $classes . '" data-date="' . $safeDate . '">' . PHP_EOL;
+                    $html .= '        <span class="oliva-events-date-value">' . $formattedDate . '</span>' . PHP_EOL;
+                    $html .= '        <span class="oliva-events-date-status">' . $unavailableLabel;
+
+                    if ($date === $today) {
+                        $html .= ' <small>(' . $todayLabel . ')</small>';
+                    }
+
+                    $html .= '</span>' . PHP_EOL;
+                    $html .= '      </li>' . PHP_EOL;
+                }
+
+                $html .= '    </ul>' . PHP_EOL;
+                $html .= '  </div>' . PHP_EOL;
             }
-
-            $html .= '  </ul>' . PHP_EOL;
         }
 
         $html .= '</section>' . PHP_EOL;
