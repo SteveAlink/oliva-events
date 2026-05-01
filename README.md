@@ -28,4 +28,5 @@ https://raw.githubusercontent.com/SteveAlink/oliva-events/main/wcms-modules.json
 ```
 
 ## Versions
+v0.2.0 01-05-2026 Date fromatting changed on front end  
 v0.1.0 01-05-2026 Initial version
