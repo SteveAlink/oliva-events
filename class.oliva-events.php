@@ -117,25 +117,34 @@ class OlivaEvents
         return $mode;
     }
 
-    private function parseDates()
+    private function parseEvents()
     {
         $raw = $this->getUnavailableDates();
-
         $items = preg_split('/[\r\n,]+/', $raw);
-        $dates = [];
+        $events = [];
 
         foreach ($items as $item) {
-            $date = trim($item);
+            $item = trim($item);
+
+            if ($item === '') {
+                continue;
+            }
+
+            $parts = explode('|', $item, 2);
+            $date = trim($parts[0]);
+            $description = isset($parts[1]) ? trim($parts[1]) : '';
 
             if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-                $dates[] = $date;
+                $events[$date] = [
+                    'date' => $date,
+                    'description' => $description
+                ];
             }
         }
 
-        $dates = array_unique($dates);
-        sort($dates);
+        ksort($events);
 
-        return $dates;
+        return array_values($events);
     }
 
     private function getVisitorTranslations()
@@ -196,12 +205,12 @@ class OlivaEvents
         return ucfirst($monthName) . ' ' . date('Y', $timestamp);
     }
 
-    private function groupDatesByMonth($dates)
+    private function groupEventsByMonth($events)
     {
         $grouped = [];
 
-        foreach ($dates as $date) {
-            $timestamp = strtotime($date);
+        foreach ($events as $event) {
+            $timestamp = strtotime($event['date']);
 
             if (!$timestamp) {
                 continue;
@@ -211,12 +220,12 @@ class OlivaEvents
 
             if (!isset($grouped[$key])) {
                 $grouped[$key] = [
-                    'heading' => $this->getMonthHeading($date),
-                    'dates' => []
+                    'heading' => $this->getMonthHeading($event['date']),
+                    'events' => []
                 ];
             }
 
-            $grouped[$key]['dates'][] = $date;
+            $grouped[$key]['events'][] = $event;
         }
 
         return $grouped;
@@ -238,7 +247,7 @@ class OlivaEvents
         $textarea = $doc->createElement('textarea');
         $textarea->setAttribute('name', $name);
         $textarea->setAttribute('class', 'form-control');
-        $textarea->setAttribute('rows', '5');
+        $textarea->setAttribute('rows', '6');
         $textarea->nodeValue = $value;
 
         return $textarea;
@@ -439,7 +448,6 @@ class OlivaEvents
         $title = htmlspecialchars($this->getCalendarTitle(), ENT_QUOTES, 'UTF-8');
         $availableLabel = htmlspecialchars($this->getAvailableLabel(), ENT_QUOTES, 'UTF-8');
         $unavailableLabel = htmlspecialchars($this->getUnavailableLabel(), ENT_QUOTES, 'UTF-8');
-
         $todayLabel = htmlspecialchars($visitorTranslations['todayLabel'] ?? 'today', ENT_QUOTES, 'UTF-8');
 
         $displayMode = $this->getDisplayMode();
@@ -454,8 +462,8 @@ class OlivaEvents
             $sectionClass = 'oliva-events-mode-unavailable';
         }
 
-        $dates = $this->parseDates();
-        $groupedDates = $this->groupDatesByMonth($dates);
+        $events = $this->parseEvents();
+        $groupedEvents = $this->groupEventsByMonth($events);
         $today = date('Y-m-d');
 
         $html = PHP_EOL;
@@ -467,29 +475,37 @@ class OlivaEvents
         $html .= '    <span class="oliva-events-legend-item oliva-events-unavailable">' . $unavailableLabel . '</span>' . PHP_EOL;
         $html .= '  </div>' . PHP_EOL;
 
-        if (empty($groupedDates)) {
+        if (empty($groupedEvents)) {
             $html .= '  <p class="oliva-events-empty">' . $activeLabel . '</p>' . PHP_EOL;
         } else {
-            foreach ($groupedDates as $month) {
+            foreach ($groupedEvents as $month) {
                 $html .= '  <div class="oliva-events-month">' . PHP_EOL;
                 $html .= '    <h3>' . htmlspecialchars($month['heading'], ENT_QUOTES, 'UTF-8') . '</h3>' . PHP_EOL;
                 $html .= '    <ul class="oliva-events-list">' . PHP_EOL;
 
-                foreach ($month['dates'] as $date) {
-                    $safeDate = htmlspecialchars($date, ENT_QUOTES, 'UTF-8');
-                    $formattedDate = htmlspecialchars($this->formatDate($date), ENT_QUOTES, 'UTF-8');
+                foreach ($month['events'] as $event) {
+                    $safeDate = htmlspecialchars($event['date'], ENT_QUOTES, 'UTF-8');
+                    $formattedDate = htmlspecialchars($this->formatDate($event['date']), ENT_QUOTES, 'UTF-8');
+                    $description = htmlspecialchars($event['description'], ENT_QUOTES, 'UTF-8');
 
                     $classes = 'oliva-events-date ' . $activeClass;
 
-                    if ($date === $today) {
+                    if ($event['date'] === $today) {
                         $classes .= ' oliva-events-date-today';
                     }
 
                     $html .= '      <li class="' . $classes . '" data-date="' . $safeDate . '">' . PHP_EOL;
-                    $html .= '        <span class="oliva-events-date-value">' . $formattedDate . '</span>' . PHP_EOL;
+                    $html .= '        <div class="oliva-events-date-main">' . PHP_EOL;
+                    $html .= '          <span class="oliva-events-date-value">' . $formattedDate . '</span>' . PHP_EOL;
+
+                    if ($description !== '') {
+                        $html .= '          <span class="oliva-events-date-description">' . $description . '</span>' . PHP_EOL;
+                    }
+
+                    $html .= '        </div>' . PHP_EOL;
                     $html .= '        <span class="oliva-events-date-status">' . $activeLabel;
 
-                    if ($date === $today) {
+                    if ($event['date'] === $today) {
                         $html .= ' <small>(' . $todayLabel . ')</small>';
                     }
 
