@@ -6,7 +6,7 @@
             "repo": "https://github.com/SteveAlink/oliva-events/tree/main",
             "zip": "https://github.com/SteveAlink/oliva-events/archive/main.zip",
             "summary": "Simple WonderCMS availability plugin for showing unavailable event dates.",
-            "version": "0.2.0",
+            "version": "0.3.0",
             "image": "https://raw.githubusercontent.com/SteveAlink/oliva-events/main/preview.png"
         }
     }
