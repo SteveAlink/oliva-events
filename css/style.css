@@ -9,6 +9,7 @@
 
 #oliva-events h2 {
     margin-top: 0;
+    margin-bottom: 1rem;
     color: #6A720C;
 }
 
@@ -16,7 +17,7 @@
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
 }
 
 .oliva-events-legend-item {
@@ -36,6 +37,18 @@
     color: #ffffff;
 }
 
+.oliva-events-month {
+    margin-top: 1.5rem;
+}
+
+.oliva-events-month h3 {
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid #BCC915;
+    color: #6A720C;
+    font-size: 1.2rem;
+}
+
 .oliva-events-list {
     list-style: none;
     padding: 0;
@@ -45,6 +58,7 @@
 .oliva-events-date {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     gap: 1rem;
     padding: 0.75rem;
     margin-bottom: 0.5rem;
@@ -56,12 +70,23 @@
     border-left: 5px solid #6A720C;
 }
 
+.oliva-events-date-today {
+    outline: 2px solid #BCC915;
+    background: #fbfce9;
+}
+
 .oliva-events-date-value {
     font-weight: 600;
 }
 
 .oliva-events-date-status {
     color: #6A720C;
+    white-space: nowrap;
+}
+
+.oliva-events-date-status small {
+    font-size: 0.8rem;
+    opacity: 0.8;
 }
 
 .oliva-events-empty {
@@ -69,4 +94,15 @@
     background: #eef3c3;
     border-radius: 8px;
     color: #6A720C;
+}
+
+@media (max-width: 600px) {
+    .oliva-events-date {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .oliva-events-date-status {
+        white-space: normal;
+    }
 }
