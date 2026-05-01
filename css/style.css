@@ -85,10 +85,22 @@
 }
 
 .oliva-events-date-status {
-    color: #6A720C;
     white-space: nowrap;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.9rem;
 }
 
+.oliva-events-date-unavailable .oliva-events-date-status {
+    background: #6A720C;
+    color: #ffffff;
+}
+
+.oliva-events-date-available .oliva-events-date-status {
+    background: #ffffff;
+    color: #6A720C;
+    border: 1px solid #BCC915;
+}
 .oliva-events-date-status small {
     font-size: 0.8rem;
     opacity: 0.8;
