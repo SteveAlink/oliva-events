@@ -58,11 +58,17 @@
 .oliva-events-date {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     gap: 1rem;
     padding: 0.75rem;
     margin-bottom: 0.5rem;
     border-radius: 8px;
+}
+
+.oliva-events-date-main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .oliva-events-date-unavailable {
@@ -84,6 +90,11 @@
     font-weight: 600;
 }
 
+.oliva-events-date-description {
+    font-size: 0.95rem;
+    color: #555;
+}
+
 .oliva-events-date-status {
     white-space: nowrap;
     padding: 0.25rem 0.65rem;
@@ -101,6 +112,7 @@
     color: #6A720C;
     border: 1px solid #BCC915;
 }
+
 .oliva-events-date-status small {
     font-size: 0.8rem;
     opacity: 0.8;
