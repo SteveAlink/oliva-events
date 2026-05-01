@@ -70,6 +70,11 @@
     border-left: 5px solid #6A720C;
 }
 
+.oliva-events-date-available {
+    background: #eef3c3;
+    border-left: 5px solid #BCC915;
+}
+
 .oliva-events-date-today {
     outline: 2px solid #BCC915;
     background: #fbfce9;
