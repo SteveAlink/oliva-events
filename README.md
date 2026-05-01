@@ -17,6 +17,7 @@ Example storage format:
 
 ```text
 2026-05-12,2026-05-13,2026-05-20
+```text
 
 ## Preview of the settings for this plugin:
 <img width="1123" height="696" alt="WcmsOlivaEventsPreviewSettings" src="https://github.com/user-attachments/assets/a9b84c09-65ea-41ca-88a1-d83c4501c2a6" />
