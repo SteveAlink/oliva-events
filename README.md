@@ -11,7 +11,14 @@ This first version is deliberately small:
 - Backend tab: Oliva Events  
 - Field: unavailable dates  
 - Storage: comma-separated text  
-- Frontend: simple list marking dates as unavailable  
+- Frontend: simple list marking dates as unavailable
+
+Version 0.2.0 is mainly an Improved frontend display:
+
+- Groups unavailable dates by month  
+- Formats dates based on visitor language  
+- Highlights today when today is unavailable  
+- Improves responsive styling  
 
 Example storage format:
 
