@@ -2,11 +2,13 @@
 
 By Steve Alink for Oliva Solutions.
 
-OlivaEvents is a simple WonderCMS plugin that shows unavailable dates on the frontend.
+OlivaEvents is a simple WonderCMS plugin that shows dates and the action for those dates on the frontend.
 
 ## Overview
 This plugin allows you to enter dates (see below the format). Using a switch in the settings tab, you can only show dates  
-that are possible or the reverse, only as dates there is no option. Just test this setting for the best result.  
+that are possible or the reverse, only as dates where it is not possible to do something (like store closed or holiday).  
+Just test this setting for the best result.  
+With a setting one is able to either show the events in the footer or on a page (could be multiple).
 
 Example storage format:
 
@@ -30,6 +32,7 @@ https://raw.githubusercontent.com/SteveAlink/oliva-events/main/wcms-modules.json
 ```
 
 ## Versions
+v0.5.0 02-05-2026 Including ``` {{oliva-events}} ``` to use on any page  
 v0.4.0 01-05-2026 Change to include a description per day   
 v0.3.0 01-05-2026 One is now able to show the available days or the not available date  
 v0.2.0 01-05-2026 Date fromatting changed on front end  
@@ -63,3 +66,11 @@ Version 0.4.0 Added optional descriptions for dates:
 - Supports comma-separated dates and one date per line
 - Shows the description below the formatted date on the frontend
 - Color coding on rows of dates on front end now have better distinction
+
+Version 0.5.0 Added flexible placement and past-date filtering:
+
+- Added setting to hide past dates
+- Added placement mode setting
+- Supports automatic footer rendering
+- Supports placeholder rendering with `{{oliva-events}}`
+- Added CSS/JS cache busting using version query strings
