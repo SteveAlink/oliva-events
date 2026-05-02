@@ -476,7 +476,8 @@ class OlivaEvents
         $availableLabel = htmlspecialchars($this->getAvailableLabel(), ENT_QUOTES, 'UTF-8');
         $unavailableLabel = htmlspecialchars($this->getUnavailableLabel(), ENT_QUOTES, 'UTF-8');
         $todayLabel = htmlspecialchars($visitorTranslations['todayLabel'] ?? 'today', ENT_QUOTES, 'UTF-8');
-
+        $emptyDatesMessage = htmlspecialchars($visitorTranslations['emptyDatesMessage'] ?? 'No dates to show.', ENT_QUOTES, 'UTF-8');
+        
         $displayMode = $this->getDisplayMode();
 
         if ($displayMode === 'available') {
@@ -503,7 +504,7 @@ class OlivaEvents
         $html .= '  </div>' . PHP_EOL;
 
         if (empty($groupedEvents)) {
-            $html .= '  <p class="oliva-events-empty">' . $activeLabel . '</p>' . PHP_EOL;
+            $html .= '  <p class="oliva-events-empty">' . $emptyDatesMessage . '</p>' . PHP_EOL;
         } else {
             foreach ($groupedEvents as $month) {
                 $html .= '  <div class="oliva-events-month">' . PHP_EOL;
