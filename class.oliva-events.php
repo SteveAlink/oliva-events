@@ -1,4 +1,10 @@
 <?php
+/**
+ * oliva-events - Events plugin for WonderCMS.
+ * Prepared by Steve Alink for Oliva Solutions
+ *
+ * Shows one or more dates with events or availability
+ */
 
 class OlivaEvents
 {
@@ -69,7 +75,9 @@ class OlivaEvents
             'olivaEventsAvailableLabel' => $this->t('defaultAvailableLabel'),
             'olivaEventsUnavailableLabel' => $this->t('defaultUnavailableLabel'),
             'olivaEventsVisitorLanguage' => $this->getDefaultVisitorLanguage(),
-            'olivaEventsDisplayMode' => 'unavailable'
+            'olivaEventsDisplayMode' => 'unavailable',
+            'olivaEventsHidePastDates' => 'no',
+            'olivaEventsPlacementMode' => 'footer'
         ];
 
         foreach ($defaults as $key => $value) {
@@ -117,11 +125,30 @@ class OlivaEvents
         return $mode;
     }
 
+    public function getHidePastDates()
+    {
+        $value = $this->Wcms->get('config', 'olivaEventsHidePastDates');
+
+        return $value === 'yes' ? 'yes' : 'no';
+    }
+
+    public function getPlacementMode()
+    {
+        $mode = $this->Wcms->get('config', 'olivaEventsPlacementMode');
+
+        if ($mode !== 'footer' && $mode !== 'placeholder') {
+            return 'footer';
+        }
+
+        return $mode;
+    }
+
     private function parseEvents()
     {
         $raw = $this->getUnavailableDates();
         $items = preg_split('/[\r\n,]+/', $raw);
         $events = [];
+        $today = date('Y-m-d');
 
         foreach ($items as $item) {
             $item = trim($item);
@@ -134,12 +161,18 @@ class OlivaEvents
             $date = trim($parts[0]);
             $description = isset($parts[1]) ? trim($parts[1]) : '';
 
-            if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
-                $events[$date] = [
-                    'date' => $date,
-                    'description' => $description
-                ];
+            if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                continue;
             }
+
+            if ($this->getHidePastDates() === 'yes' && $date < $today) {
+                continue;
+            }
+
+            $events[$date] = [
+                'date' => $date,
+                'description' => $description
+            ];
         }
 
         ksort($events);
@@ -258,6 +291,26 @@ class OlivaEvents
         return $doc->createElement('label', $text);
     }
 
+    private function createSelect($doc, $name, $options, $currentValue)
+    {
+        $select = $doc->createElement('select');
+        $select->setAttribute('name', $name);
+        $select->setAttribute('class', 'form-control');
+
+        foreach ($options as $value => $label) {
+            $option = $doc->createElement('option', $label);
+            $option->setAttribute('value', $value);
+
+            if ($currentValue === $value) {
+                $option->setAttribute('selected', 'selected');
+            }
+
+            $select->appendChild($option);
+        }
+
+        return $select;
+    }
+
     public function alterAdmin(array $args): array
     {
         $this->loadTranslations();
@@ -307,29 +360,27 @@ class OlivaEvents
         $form->appendChild($this->createLabel($doc, $this->t('labelCalendarTitle')));
         $form->appendChild($this->createInput($doc, 'oliva_events_calendar_title', $this->getCalendarTitle()));
 
+        $form->appendChild($this->createLabel($doc, $this->t('labelPlacementMode')));
+        $form->appendChild($this->createSelect($doc, 'oliva_events_placement_mode', [
+            'footer' => $this->t('optionPlacementFooter'),
+            'placeholder' => $this->t('optionPlacementPlaceholder')
+        ], $this->getPlacementMode()));
+
+        $placeholderHelp = $doc->createElement('p', $this->t('helpPlacementMode'));
+        $placeholderHelp->setAttribute('class', 'small text-muted');
+        $form->appendChild($placeholderHelp);
+
         $form->appendChild($this->createLabel($doc, $this->t('labelDisplayMode')));
-
-        $displayModeSelect = $doc->createElement('select');
-        $displayModeSelect->setAttribute('name', 'oliva_events_display_mode');
-        $displayModeSelect->setAttribute('class', 'form-control');
-
-        $displayModes = [
+        $form->appendChild($this->createSelect($doc, 'oliva_events_display_mode', [
             'unavailable' => $this->t('optionShowUnavailableDates'),
             'available' => $this->t('optionShowAvailableDates')
-        ];
+        ], $this->getDisplayMode()));
 
-        foreach ($displayModes as $value => $label) {
-            $option = $doc->createElement('option', $label);
-            $option->setAttribute('value', $value);
-
-            if ($this->getDisplayMode() === $value) {
-                $option->setAttribute('selected', 'selected');
-            }
-
-            $displayModeSelect->appendChild($option);
-        }
-
-        $form->appendChild($displayModeSelect);
+        $form->appendChild($this->createLabel($doc, $this->t('labelHidePastDates')));
+        $form->appendChild($this->createSelect($doc, 'oliva_events_hide_past_dates', [
+            'no' => $this->t('optionNo'),
+            'yes' => $this->t('optionYes')
+        ], $this->getHidePastDates()));
 
         $form->appendChild($this->createLabel($doc, $this->t('labelDates')));
         $form->appendChild($this->createTextarea($doc, 'oliva_events_unavailable_dates', $this->getUnavailableDates()));
@@ -350,23 +401,14 @@ class OlivaEvents
         $languageFiles = glob($languagesDir . '/*.ini');
         $currentLang = $this->getVisitorLanguage();
 
-        $select = $doc->createElement('select');
-        $select->setAttribute('name', 'oliva_events_visitor_language');
-        $select->setAttribute('class', 'form-control');
+        $languageOptions = [];
 
         foreach ($languageFiles as $file) {
             $languageCode = basename($file, '.ini');
-            $option = $doc->createElement('option', $languageCode);
-            $option->setAttribute('value', $languageCode);
-
-            if ($currentLang === $languageCode) {
-                $option->setAttribute('selected', 'selected');
-            }
-
-            $select->appendChild($option);
+            $languageOptions[$languageCode] = $languageCode;
         }
 
-        $form->appendChild($select);
+        $form->appendChild($this->createSelect($doc, 'oliva_events_visitor_language', $languageOptions, $currentLang));
 
         $saveButton = $doc->createElement('button');
         $saveButton->setAttribute('type', 'submit');
@@ -401,47 +443,32 @@ class OlivaEvents
                 $displayMode = 'unavailable';
             }
 
-            $this->Wcms->set(
-                'config',
-                'olivaEventsCalendarTitle',
-                $this->cleanText($_POST['oliva_events_calendar_title'] ?? $this->t('defaultCalendarTitle'))
-            );
+            $hidePastDates = $this->cleanText($_POST['oliva_events_hide_past_dates'] ?? 'no');
 
-            $this->Wcms->set(
-                'config',
-                'olivaEventsDisplayMode',
-                $displayMode
-            );
+            if ($hidePastDates !== 'yes' && $hidePastDates !== 'no') {
+                $hidePastDates = 'no';
+            }
 
-            $this->Wcms->set(
-                'config',
-                'olivaEventsUnavailableDates',
-                $this->cleanText($_POST['oliva_events_unavailable_dates'] ?? '')
-            );
+            $placementMode = $this->cleanText($_POST['oliva_events_placement_mode'] ?? 'footer');
 
-            $this->Wcms->set(
-                'config',
-                'olivaEventsAvailableLabel',
-                $this->cleanText($_POST['oliva_events_available_label'] ?? $this->t('defaultAvailableLabel'))
-            );
+            if ($placementMode !== 'footer' && $placementMode !== 'placeholder') {
+                $placementMode = 'footer';
+            }
 
-            $this->Wcms->set(
-                'config',
-                'olivaEventsUnavailableLabel',
-                $this->cleanText($_POST['oliva_events_unavailable_label'] ?? $this->t('defaultUnavailableLabel'))
-            );
-
-            $this->Wcms->set(
-                'config',
-                'olivaEventsVisitorLanguage',
-                $this->cleanText($_POST['oliva_events_visitor_language'] ?? 'en_US')
-            );
+            $this->Wcms->set('config', 'olivaEventsCalendarTitle', $this->cleanText($_POST['oliva_events_calendar_title'] ?? $this->t('defaultCalendarTitle')));
+            $this->Wcms->set('config', 'olivaEventsPlacementMode', $placementMode);
+            $this->Wcms->set('config', 'olivaEventsDisplayMode', $displayMode);
+            $this->Wcms->set('config', 'olivaEventsHidePastDates', $hidePastDates);
+            $this->Wcms->set('config', 'olivaEventsUnavailableDates', $this->cleanText($_POST['oliva_events_unavailable_dates'] ?? ''));
+            $this->Wcms->set('config', 'olivaEventsAvailableLabel', $this->cleanText($_POST['oliva_events_available_label'] ?? $this->t('defaultAvailableLabel')));
+            $this->Wcms->set('config', 'olivaEventsUnavailableLabel', $this->cleanText($_POST['oliva_events_unavailable_label'] ?? $this->t('defaultUnavailableLabel')));
+            $this->Wcms->set('config', 'olivaEventsVisitorLanguage', $this->cleanText($_POST['oliva_events_visitor_language'] ?? 'en_US'));
         }
 
         return $this->alterAdmin($args);
     }
 
-    public function renderCalendar(array $args): array
+    private function buildCalendarHtml()
     {
         $visitorTranslations = $this->getVisitorTranslations();
 
@@ -520,7 +547,35 @@ class OlivaEvents
 
         $html .= '</section>' . PHP_EOL;
 
-        $args[0] .= $html;
+        return $html;
+    }
+
+    public function renderCalendar(array $args): array
+    {
+        if ($this->getPlacementMode() !== 'footer') {
+            return $args;
+        }
+
+        $args[0] .= $this->buildCalendarHtml();
+
+        return $args;
+    }
+
+    public function replacePlaceholder(array $args): array
+    {
+        if ($this->getPlacementMode() !== 'placeholder') {
+            return $args;
+        }
+
+        if (!isset($args[1]) || $args[1] !== 'content') {
+            return $args;
+        }
+
+        if (strpos($args[0], '{{oliva-events}}') === false) {
+            return $args;
+        }
+
+        $args[0] = str_replace('{{oliva-events}}', $this->buildCalendarHtml(), $args[0]);
 
         return $args;
     }
