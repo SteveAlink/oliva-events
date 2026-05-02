@@ -38,6 +38,7 @@ https://raw.githubusercontent.com/SteveAlink/oliva-events/main/wcms-modules.json
 ```
 
 ## Versions
+v0.6.0 02-05-2026 Show correct message if no dates (un)available  
 v0.5.1 02-05-2026 Change as site broke of incorrect coding  
 v0.5.0 02-05-2026 Including ``` {{oliva-events}} ``` to use on any page  
 v0.4.0 01-05-2026 Change to include a description per day   
@@ -83,3 +84,8 @@ Version 0.5.0 Added flexible placement and past-date filtering:
 - Added CSS/JS cache busting using version query strings
 
 Version 0.5.1 Change code as server error occured
+
+Version 0.6.0 Show correct message if no dates
+
+- All language files updated
+- New message is shown in front end if there are no dates available (not entered or all in the past)
