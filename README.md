@@ -8,7 +8,8 @@ OlivaEvents is a simple WonderCMS plugin that shows dates and the action for tho
 This plugin allows you to enter dates (see below the format). Using a switch in the settings tab, you can only show dates  
 that are possible or the reverse, only as dates where it is not possible to do something (like store closed or holiday).  
 Just test this setting for the best result.  
-With a setting one is able to either show the events in the footer or on a page (could be multiple).
+With the display mode setting one is able to either show the events in the footer or on a page (could be multiple).  
+It is possible to hide all dates that are in the past.   
 
 Example storage format:
 
@@ -24,7 +25,12 @@ or
 ```
 
 ## Preview of the settings for this plugin:
-<img width="1142" height="765" alt="WcmsOlivaEventsPreviewSettings030" src="https://github.com/user-attachments/assets/eceb3a2f-5ccc-414e-80ed-2c0f0bf87782" />
+<img width="1120" height="964" alt="WcmsOlivaEventsPreviewSettings050" src="https://github.com/user-attachments/assets/8e142482-d9d1-4204-a810-3436a5a130df" />
+
+
+## Preview of the frontend using the placeholder
+<img width="2025" height="979" alt="WcmsOlivaEventsFrontEnd" src="https://github.com/user-attachments/assets/8f0e79f4-1ca0-4449-a85e-c8863698a660" />
+In the red box, the rendered calendar.
 
 ## Download the plugin via
 ```text
@@ -32,6 +38,7 @@ https://raw.githubusercontent.com/SteveAlink/oliva-events/main/wcms-modules.json
 ```
 
 ## Versions
+v0.5.1 02-05-2026 Change as site broke of incorrect coding  
 v0.5.0 02-05-2026 Including ``` {{oliva-events}} ``` to use on any page  
 v0.4.0 01-05-2026 Change to include a description per day   
 v0.3.0 01-05-2026 One is now able to show the available days or the not available date  
@@ -74,3 +81,5 @@ Version 0.5.0 Added flexible placement and past-date filtering:
 - Supports automatic footer rendering
 - Supports placeholder rendering with `{{oliva-events}}`
 - Added CSS/JS cache busting using version query strings
+
+Version 0.5.1 Change code as server error occured
