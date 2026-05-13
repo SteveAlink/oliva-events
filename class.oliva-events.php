@@ -269,7 +269,8 @@ class OlivaEvents
         $input = $doc->createElement('input');
         $input->setAttribute('type', 'text');
         $input->setAttribute('name', $name);
-        $input->setAttribute('class', 'form-control');
+        $input->setAttribute('class', 'editText');
+        $input->setAttribute('style', 'width: 100%; border: 1px solid #ccc;');
         $input->setAttribute('value', $value);
 
         return $input;
@@ -279,7 +280,8 @@ class OlivaEvents
     {
         $textarea = $doc->createElement('textarea');
         $textarea->setAttribute('name', $name);
-        $textarea->setAttribute('class', 'form-control');
+        $textarea->setAttribute('class', 'editText');
+        $textarea->setAttribute('style', 'width: 100%; border: 1px solid #ccc;');
         $textarea->setAttribute('rows', '6');
         $textarea->nodeValue = $value;
 
@@ -295,7 +297,8 @@ class OlivaEvents
     {
         $select = $doc->createElement('select');
         $select->setAttribute('name', $name);
-        $select->setAttribute('class', 'form-control');
+        $select->setAttribute('class', 'editText');
+        $select->setAttribute('style', 'width: 100%; border: 1px solid #ccc;');
 
         foreach ($options as $value => $label) {
             $option = $doc->createElement('option', $label);
@@ -354,7 +357,9 @@ class OlivaEvents
         $form->setAttribute('method', 'post');
         $form->setAttribute('action', '');
 
-        $title = $doc->createElement('h2', $this->t('headingEventsSettings'));
+        $title = $doc->createElement('p');
+        $title->setAttribute('class', 'subTitle');
+        $title->nodevalue = $this->t('headingEventsSettings');
         $form->appendChild($title);
 
         $form->appendChild($this->createLabel($doc, $this->t('labelCalendarTitle')));
