@@ -44,6 +44,7 @@ https://raw.githubusercontent.com/SteveAlink/oliva-events/main/wcms-modules.json
 ```
 
 ## Versions
+v0.6.1 13-05-2026 Change styling of admin   
 v0.6.0 02-05-2026 Show correct message if no dates (un)available  
 v0.5.1 02-05-2026 Change as site broke of incorrect coding  
 v0.5.0 02-05-2026 Including ``` {{oliva-events}} ``` to use on any page  
@@ -95,3 +96,7 @@ Version 0.6.0 Show correct message if no dates
 
 - All language files updated
 - New message is shown in front end if there are no dates available (not entered or all in the past)
+
+Version 0.6.1 Change to styling of backend
+
+- Update styling so it follows the standard of WonderCMS
