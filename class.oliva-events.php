@@ -418,7 +418,7 @@ class OlivaEvents
         $saveButton = $doc->createElement('button');
         $saveButton->setAttribute('type', 'submit');
         $saveButton->setAttribute('name', 'saveOlivaEventsSettings');
-        $saveButton->setAttribute('class', 'btn btn-primary');
+        $saveButton->setAttribute('class', 'wbtn wbtn-info');
         $saveButton->nodeValue = $this->t('saveButton');
 
         $form->appendChild($saveButton);
